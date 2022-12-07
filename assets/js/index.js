@@ -59,15 +59,6 @@ productWrap.addEventListener('click', function (e) {
   addCart(addCartData);
   getCarts();
 });
-// e.preventDefault();
-// const productTitle = e.target.nextElementSibling.innerText;
-// console.log(productTitle);
-// const resultID = productsData.filter(item => productTitle === item.title)[0].id;
-// console.log(resultID);
-// const addCartData = { data: { productId: resultID, quantity: 1 } };
-// console.log(addCartData);
-// addCart(addCartData);
-// getCarts();
 
 // 購物車單項、全部清除
 shoppingCartTable.addEventListener('click', function (e) {
