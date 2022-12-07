@@ -47,22 +47,27 @@ productSelect.addEventListener('change', function (e) {
 
 // 加入購物車
 productWrap.addEventListener('click', function (e) {
-  var ProductTitle = e.target.nextElementSibling.innerText;
   e.preventDefault();
-  var resultID = productsData.filter(function (item) {
-    return ProductTitle === item.title;
-  })[0].id;
-  console.log(resultID);
+  if (e.target.textContent !== '加入購物車') return;
+  var id = e.target.dataset.id;
   var addCartData = {
     data: {
-      productId: resultID,
+      productId: id,
       quantity: 1
     }
   };
-  console.log(addCartData);
   addCart(addCartData);
   getCarts();
 });
+// e.preventDefault();
+// const productTitle = e.target.nextElementSibling.innerText;
+// console.log(productTitle);
+// const resultID = productsData.filter(item => productTitle === item.title)[0].id;
+// console.log(resultID);
+// const addCartData = { data: { productId: resultID, quantity: 1 } };
+// console.log(addCartData);
+// addCart(addCartData);
+// getCarts();
 
 // 購物車單項、全部清除
 shoppingCartTable.addEventListener('click', function (e) {
@@ -124,9 +129,10 @@ function renderProducts(productsData) {
       images = _ref.images,
       title = _ref.title,
       price = _ref.price,
-      origin_price = _ref.origin_price;
+      origin_price = _ref.origin_price,
+      id = _ref.id;
     var index = arguments.length > 1 ? arguments[1] : undefined;
-    str += "<li class=\"productCard\">\n        <h4 class=\"productType\">".concat(category, "</h4>\n        <img src=\"").concat(images, "\" alt=\"img-").concat(index, "\">\n        <a href=\"#\" class=\"addCardBtn\">\u52A0\u5165\u8CFC\u7269\u8ECA</a>\n        <h3>").concat(title, "</h3>\n        <del class=\"originPrice\">NT$").concat(thousandths(origin_price), "</del>\n        <p class=\"nowPrice\">NT$").concat(thousandths(price), "</p>\n      </li>");
+    str += "<li class=\"productCard\">\n        <h4 class=\"productType\">".concat(category, "</h4>\n        <img src=\"").concat(images, "\" alt=\"img-").concat(index, "\">\n        <a href=\"#\" data-id=\"").concat(id, "\" class=\"addCardBtn\">\u52A0\u5165\u8CFC\u7269\u8ECA</a>\n        <h3>").concat(title, "</h3>\n        <del class=\"originPrice\">NT$").concat(thousandths(origin_price), "</del>\n        <p class=\"nowPrice\">NT$").concat(thousandths(price), "</p>\n      </li>");
   });
   productWrap.innerHTML = str;
 }

@@ -7,7 +7,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-var data;
+var tempOrders;
 
 /*-----選擇器部分-----*/
 // order區塊
@@ -53,11 +53,23 @@ discardAllBtn.addEventListener('click', function (e) {
   deleteAllOrder();
 });
 
+// 訂單項目排序（由大到小）
+orderPageTable.addEventListener('click', function (e) {
+  var dataSet = e.target.dataset.item;
+  if (dataSet === 'createdAt' || dataSet === 'paid') {
+    tempOrders.sort(function (a, b) {
+      return b[dataSet] - a[dataSet];
+    });
+  }
+  ;
+  renderOrder(tempOrders);
+});
+
 /*----- 渲染部分-----*/
 
 // 訂單渲染
 function renderOrder(orders) {
-  var thead = "\n  <thead>\n    <tr>\n      <th>\u8A02\u55AE\u7DE8\u865F</th>\n      <th>\u806F\u7D61\u4EBA</th>\n      <th>\u806F\u7D61\u5730\u5740</th>\n      <th>\u96FB\u5B50\u90F5\u4EF6</th>\n      <th>\u8A02\u55AE\u54C1\u9805</th>\n      <th>\u8A02\u55AE\u65E5\u671F</th>\n      <th>\u8A02\u55AE\u72C0\u614B</th>\n      <th>\u64CD\u4F5C</th>\n    </tr>\n  </thead>";
+  var thead = "\n  <thead>\n    <tr>\n      <th data-item=\"createdAt\">\u8A02\u55AE\u7DE8\u865F</th>\n      <th>\u806F\u7D61\u4EBA</th>\n      <th>\u806F\u7D61\u5730\u5740</th>\n      <th>\u96FB\u5B50\u90F5\u4EF6</th>\n      <th>\u8A02\u55AE\u54C1\u9805</th>\n      <th>\u8A02\u55AE\u65E5\u671F</th>\n      <th data-item=\"paid\">\u8A02\u55AE\u72C0\u614B</th>\n      <th>\u64CD\u4F5C</th>\n    </tr>\n  </thead>";
   var tbody = "";
   orders.forEach(function () {
     var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : item,
@@ -107,7 +119,7 @@ function takeoutOrderItem(products) {
 ;
 
 // 建立c3圖表需要的資料
-function createChartData(data) {
+function createC3Data(data) {
   var saleItem = {};
   var chartData = {
     color: {},
@@ -193,6 +205,7 @@ function changeOrder(obj) {
     apiPath = api.apiPath;
   axios.put("".concat(address, "/admin/").concat(apiPath, "/orders"), obj).then(function (res) {
     var orders = res.data.orders;
+    tempOrders = orders;
     renderOrder(orders);
     jumpAlert('已更改訂單狀態', 'success');
   })["catch"](function (err) {
@@ -208,7 +221,8 @@ function deleteOrder(id) {
   axios["delete"]("".concat(address, "/admin/").concat(apiPath, "/orders/").concat(id)).then(function (res) {
     var orders = res.data.orders;
     renderOrder(orders);
-    createChartData(orders);
+    tempOrders = orders;
+    createC3Data(orders);
     jumpAlert('已刪除訂單', 'warning');
   })["catch"](function (err) {
     console.log(err);
@@ -225,7 +239,8 @@ function deleteAllOrder() {
       orders = _res$data.orders,
       message = _res$data.message;
     renderOrder(orders);
-    createChartData(orders);
+    tempOrders = orders;
+    createC3Data(orders);
     jumpAlert(message, 'warning');
   })["catch"](function (err) {
     console.log(err);
@@ -249,8 +264,8 @@ _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
           getOrders = _context.sent;
           orders = getOrders.data.orders;
           console.log(orders);
-          data = orders;
-          createChartData(orders);
+          tempOrders = orders;
+          createC3Data(orders);
           renderOrder(orders);
           _context.next = 16;
           break;
